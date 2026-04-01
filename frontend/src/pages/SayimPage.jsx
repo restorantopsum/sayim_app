@@ -46,7 +46,10 @@ export default function SayimPage() {
       setStatusType("success");
       setBarcode("");
       setQuantity("");
-      setTimeout(() => setStatus(""), 1500);
+      setTimeout(() => {
+        setStatus("");
+        setScanning(true);
+      }, 800);
     } catch {
       setStatus("Xəta baş verdi!");
       setStatusType("error");
