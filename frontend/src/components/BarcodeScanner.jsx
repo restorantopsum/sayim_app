@@ -59,7 +59,8 @@ export default function BarcodeScanner({ onDetected }) {
 
         scan();
       } catch (err) {
-        setError("Kamera xətası: " + err.message);
+        setError("Xəta: " + err.message);
+        alert("Scanner xəta: " + err.message);
       }
     };
 

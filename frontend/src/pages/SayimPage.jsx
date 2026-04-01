@@ -53,7 +53,10 @@ export default function SayimPage() {
       {scanning ? (
         <BarcodeScanner onDetected={handleDetected} />
       ) : (
-        <button className="scan-btn" onClick={() => setScanning(true)}>
+        <button className="scan-btn" onClick={() => {
+          setStatus("");
+          setScanning(true);
+        }}>
           📷 Scan Et
         </button>
       )}
