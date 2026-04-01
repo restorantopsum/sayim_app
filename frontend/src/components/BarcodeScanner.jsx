@@ -11,6 +11,8 @@ export default function BarcodeScanner({ onDetected }) {
         Html5QrcodeSupportedFormats.CODE_128,
         Html5QrcodeSupportedFormats.EAN_13,
         Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
       ],
       verbose: false,
     });
@@ -18,11 +20,19 @@ export default function BarcodeScanner({ onDetected }) {
 
     html5Qr
       .start(
-        { facingMode: "environment" },
         {
-          fps: 15,
-          qrbox: { width: 280, height: 150 },
-          aspectRatio: 1.0,
+          facingMode: "environment",
+        },
+        {
+          fps: 20,
+          qrbox: { width: 300, height: 120 },
+          videoConstraints: {
+            facingMode: "environment",
+            advanced: [
+              { focusMode: "continuous" },
+              { zoom: 2.0 },
+            ],
+          },
         },
         (decodedText) => {
           html5Qr.stop().then(() => {
