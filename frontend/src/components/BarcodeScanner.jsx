@@ -60,7 +60,6 @@ export default function BarcodeScanner({ onDetected }) {
         scan();
       } catch (err) {
         setError("Xəta: " + err.message);
-        alert("Scanner xəta: " + err.message);
       }
     };
 
