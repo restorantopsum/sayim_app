@@ -1,52 +1,38 @@
 import { useEffect, useRef } from "react";
-import Quagga from "@ericblade/quagga2";
+import { Html5Qrcode } from "html5-qrcode";
 
 export default function BarcodeScanner({ onDetected }) {
   const scannerRef = useRef(null);
+  const html5QrRef = useRef(null);
 
   useEffect(() => {
-    Quagga.init(
-      {
-        inputStream: {
-          type: "LiveStream",
-          target: scannerRef.current,
-          constraints: {
-            facingMode: "environment",
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          },
-        },
-        decoder: {
-          readers: ["code_128_reader"],
-        },
-        locate: true,
-        locator: {
-          patchSize: "medium",
-          halfSample: true,
-        },
-      },
-      (err) => {
-        if (err) {
-          console.error("Quagga init error:", err);
-          return;
-        }
-        Quagga.start();
-      }
-    );
+    const scannerId = "barcode-scanner";
+    const html5Qr = new Html5Qrcode(scannerId);
+    html5QrRef.current = html5Qr;
 
-    Quagga.onDetected((result) => {
-      const code = result.codeResult.code;
-      if (code) {
-        Quagga.stop();
-        onDetected(code);
-      }
-    });
+    html5Qr
+      .start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 300, height: 100 },
+          formatsToSupport: [0], // CODE_128
+        },
+        (decodedText) => {
+          html5Qr.stop().then(() => {
+            onDetected(decodedText);
+          });
+        },
+        () => {} // ignore errors during scanning
+      )
+      .catch((err) => {
+        console.error("Scanner start error:", err);
+      });
 
     return () => {
-      Quagga.stop();
-      Quagga.offDetected();
+      html5Qr.stop().catch(() => {});
     };
   }, [onDetected]);
 
-  return <div ref={scannerRef} className="scanner-container" />;
+  return <div id="barcode-scanner" className="scanner-container" />;
 }
