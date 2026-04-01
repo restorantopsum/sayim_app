@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   base: "/sayim_app/",
   server: {
+    host: true,
     proxy: {
       "/api": "http://localhost:3001",
     },
