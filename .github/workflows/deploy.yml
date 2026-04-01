@@ -18,12 +18,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: ''
 
       - name: Install and build
         working-directory: frontend
         run: |
           npm ci
           npm run build
+
+      - name: List dist files
+        run: ls -la frontend/dist/assets/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
