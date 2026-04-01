@@ -129,11 +129,20 @@ html, body {
 }
 
 .status-msg {
-  padding: 8px 12px;
-  background: #fef3c7;
+  padding: 10px 12px;
   border-radius: 8px;
   text-align: center;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.status-msg.success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-msg.error {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 /* Calculator */

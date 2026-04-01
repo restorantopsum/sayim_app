@@ -8,6 +8,7 @@ export default function SayimPage() {
   const [barcode, setBarcode] = useState("");
   const [quantity, setQuantity] = useState("");
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState("");
 
   const handleDetected = useCallback((code) => {
     setBarcode(code);
@@ -29,22 +30,26 @@ export default function SayimPage() {
   const handleConfirm = async () => {
     if (!barcode) {
       setStatus("Əvvəlcə barkod oxudun!");
+      setStatusType("error");
       return;
     }
     const qty = evaluateExpression(quantity);
     if (qty <= 0) {
       setStatus("Miqdar daxil et!");
+      setStatusType("error");
       return;
     }
 
     try {
       await saveSayim(barcode, qty);
       setStatus("Saxlanıldı ✓");
+      setStatusType("success");
       setBarcode("");
       setQuantity("");
       setTimeout(() => setStatus(""), 1500);
     } catch {
       setStatus("Xəta baş verdi!");
+      setStatusType("error");
     }
   };
 
@@ -74,7 +79,7 @@ export default function SayimPage() {
         </div>
       </div>
 
-      {status && <div className="status-msg">{status}</div>}
+      {status && <div className={`status-msg ${statusType}`}>{status}</div>}
 
       <Calculator
         value={quantity}
