@@ -21,6 +21,7 @@ export default function HesabatPage() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Silmək istədiyinizə əminsiniz?")) return;
     try {
       await deleteSayim(id);
       setItems(items.filter((item) => item.id !== id));
