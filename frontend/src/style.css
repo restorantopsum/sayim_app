@@ -1,0 +1,235 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 60px;
+}
+
+/* Bottom Tabs */
+.bottom-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #ddd;
+  z-index: 100;
+}
+
+.bottom-tabs button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  background: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+}
+
+.bottom-tabs button.active {
+  color: #2563eb;
+  border-top: 2px solid #2563eb;
+}
+
+/* Sayım Page */
+.sayim-page {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scan-btn {
+  padding: 20px;
+  font-size: 20px;
+  border: 2px dashed #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.scan-btn:active {
+  background: #dbeafe;
+}
+
+.scanner-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.scanner-container video {
+  width: 100%;
+  display: block;
+}
+
+.barcode-display {
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.quantity-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity-display label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quantity-field {
+  flex: 1;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: right;
+  min-height: 48px;
+}
+
+.status-msg {
+  padding: 8px 12px;
+  background: #fef3c7;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Calculator */
+.calculator {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.calc-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calc-btn {
+  padding: 18px;
+  font-size: 22px;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calc-btn:active {
+  background: #f1f5f9;
+}
+
+.action-btn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.confirm-btn {
+  background: #2563eb;
+  color: #fff;
+  grid-row: span 2;
+}
+
+.confirm-btn:active {
+  background: #1d4ed8;
+}
+
+/* Hesabat Page */
+.hesabat-page {
+  padding: 16px;
+}
+
+.hesabat-page h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+}
+
+.hesabat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hesabat-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.h-barcode {
+  flex: 1;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.h-qty {
+  font-weight: 700;
+  font-size: 18px;
+  margin-right: 16px;
+}
+
+.delete-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.total {
+  margin-top: 16px;
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: #94a3b8;
+}
