@@ -29,17 +29,30 @@ export default function HesabatPage() {
     }
   };
 
-  if (loading) return <div className="loading">Yüklənir...</div>;
+  const [search, setSearch] = useState("");
+
+  const filtered = items.filter((item) =>
+    item.barcode.includes(search)
+  );
+
+  if (loading) return <div className="loading"><div className="spinner" />Yüklənir...</div>;
 
   return (
     <div className="hesabat-page">
       <h2>Hesabat</h2>
-      {items.length === 0 ? (
-        <p className="empty">Hələ heç bir sayım yoxdur.</p>
+      <input
+        className="search-field"
+        type="text"
+        placeholder="Barkod axtar..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      {filtered.length === 0 ? (
+        <p className="empty">{items.length === 0 ? "Hələ heç bir sayım yoxdur." : "Nəticə tapılmadı."}</p>
       ) : (
         <>
           <div className="hesabat-list">
-            {items.map((item) => (
+            {filtered.map((item) => (
               <div key={item.id} className="hesabat-row">
                 <span className="h-barcode">{item.barcode}</span>
                 <span className="h-qty">{item.quantity}</span>
@@ -52,7 +65,7 @@ export default function HesabatPage() {
               </div>
             ))}
           </div>
-          <div className="total">Cəmi: {items.length} əməliyyat</div>
+          <div className="total">Cəmi: {filtered.length} əməliyyat</div>
         </>
       )}
     </div>
