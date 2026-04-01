@@ -1,56 +1,41 @@
 import { useEffect, useRef } from "react";
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
+import { BarcodeScanner as DBRScanner } from "dynamsoft-barcode-reader-bundle";
+
+DBRScanner.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTA1MzU0MzI5LU1UQTFNelUwTXpJNUxYZGxZaTFVY21saGJGQnliMm8iLCJtYWluU2VydmVyVVJMIjoiaHR0cHM6Ly9tZGxzLmR5bmFtc29mdG9ubGluZS5jb20vIiwib3JnYW5pemF0aW9uSUQiOiIxMDUzNTQzMjkiLCJzdGFuZGJ5U2VydmVyVVJMIjoiaHR0cHM6Ly9zZGxzLmR5bmFtc29mdG9ubGluZS5jb20vIiwiY2hlY2tDb2RlIjotMTczMTE0MTMwOH0=";
 
 export default function BarcodeScanner({ onDetected }) {
-  const html5QrRef = useRef(null);
+  const scannerRef = useRef(null);
+  const cameraEnhancerRef = useRef(null);
 
   useEffect(() => {
-    const scannerId = "barcode-scanner";
-    const html5Qr = new Html5Qrcode(scannerId, {
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.CODE_128,
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8,
-        Html5QrcodeSupportedFormats.UPC_A,
-        Html5QrcodeSupportedFormats.UPC_E,
-      ],
-      verbose: false,
-    });
-    html5QrRef.current = html5Qr;
+    let scanner = null;
 
-    html5Qr
-      .start(
-        {
-          facingMode: "environment",
-        },
-        {
-          fps: 20,
-          qrbox: { width: 300, height: 120 },
-          videoConstraints: {
-            facingMode: "environment",
-            advanced: [
-              { focusMode: "continuous" },
-              { zoom: 2.0 },
-            ],
-          },
-        },
-        (decodedText) => {
-          html5Qr.stop().then(() => {
-            onDetected(decodedText);
-          });
-        },
-        () => {}
-      )
-      .catch((err) => {
-        console.error("Scanner start error:", err);
-      });
+    const init = async () => {
+      try {
+        scanner = await DBRScanner.createInstance();
+        scannerRef.current = scanner;
+
+        scanner.onUniqueRead = (txt) => {
+          if (txt) {
+            scanner.close();
+            onDetected(txt);
+          }
+        };
+
+        await scanner.open(document.getElementById("scanner-view"));
+      } catch (err) {
+        console.error("Dynamsoft init error:", err);
+      }
+    };
+
+    init();
 
     return () => {
-      if (html5QrRef.current) {
-        html5QrRef.current.stop().catch(() => {});
+      if (scannerRef.current) {
+        scannerRef.current.close();
       }
     };
   }, [onDetected]);
 
-  return <div id="barcode-scanner" className="scanner-container" />;
+  return <div id="scanner-view" className="scanner-container" />;
 }
