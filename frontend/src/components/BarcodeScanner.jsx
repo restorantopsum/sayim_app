@@ -1,36 +1,88 @@
-import { useEffect, useRef } from "react";
-import { BarcodeScanner as DynamsoftScanner } from "dynamsoft-barcode-reader-bundle";
+import { useEffect, useRef, useState } from "react";
+import { BarcodeDetector as BarcodeDetectorPolyfill } from "barcode-detector";
+
+const getDetector = () => {
+  const Detector = window.BarcodeDetector || BarcodeDetectorPolyfill;
+  return new Detector({
+    formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e"],
+  });
+};
 
 export default function BarcodeScanner({ onDetected }) {
-  const scannerRef = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    let scanner = null;
+    let stopped = false;
+    let animFrame = null;
 
-    const init = async () => {
+    const start = async () => {
       try {
-        scanner = new DynamsoftScanner({
-          license: "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTA1MzU0MzI5LU1UQTFNelUwTXpJNUxYZGxZaTFVY21saGJGQnliMm8iLCJtYWluU2VydmVyVVJMIjoiaHR0cHM6Ly9tZGxzLmR5bmFtc29mdG9ubGluZS5jb20vIiwib3JnYW5pemF0aW9uSUQiOiIxMDUzNTQzMjkiLCJzdGFuZGJ5U2VydmVyVVJMIjoiaHR0cHM6Ly9zZGxzLmR5bmFtc29mdG9ubGluZS5jb20vIiwiY2hlY2tDb2RlIjotMTczMTE0MTMwOH0=",
-          onUniqueBarcodeScanned: (result) => {
-            scanner.dispose();
-            onDetected(result.text);
+        const detector = getDetector();
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
           },
         });
-        scannerRef.current = scanner;
-        await scanner.launch();
+
+        if (stopped) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+
+        streamRef.current = stream;
+        const video = videoRef.current;
+        video.srcObject = stream;
+        await video.play();
+
+        const scan = async () => {
+          if (stopped) return;
+          try {
+            const barcodes = await detector.detect(video);
+            if (barcodes.length > 0) {
+              const code = barcodes[0].rawValue;
+              if (code) {
+                stream.getTracks().forEach((t) => t.stop());
+                onDetected(code);
+                return;
+              }
+            }
+          } catch (e) {
+            // frame not ready, skip
+          }
+          animFrame = requestAnimationFrame(scan);
+        };
+
+        scan();
       } catch (err) {
-        console.error("Dynamsoft init error:", err);
+        setError("Kamera xətası: " + err.message);
       }
     };
 
-    init();
+    start();
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.dispose();
+      stopped = true;
+      if (animFrame) cancelAnimationFrame(animFrame);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
       }
     };
   }, [onDetected]);
 
-  return null;
+  return (
+    <div className="scanner-container">
+      {error && <div style={{ color: "red", padding: 8 }}>{error}</div>}
+      <video
+        ref={videoRef}
+        style={{ width: "100%", borderRadius: 12 }}
+        playsInline
+        muted
+      />
+    </div>
+  );
 }
