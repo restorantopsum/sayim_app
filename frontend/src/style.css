@@ -212,6 +212,28 @@ html, body {
   border-color: #2563eb;
 }
 
+.export-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.export-btn:active {
+  background: #1d4ed8;
+}
+
+.export-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
 .hesabat-list {
   display: flex;
   flex-direction: column;

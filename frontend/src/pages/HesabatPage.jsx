@@ -48,6 +48,31 @@ export default function HesabatPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      <button
+        className="export-btn"
+        onClick={() => {
+          const BOM = "\uFEFF";
+          const header = "Barkod,Miqdar,Tarix\n";
+          const rows = filtered
+            .map((item) => {
+              const date = new Date(item.created_at).toLocaleString("az-AZ");
+              return `${item.barcode},${item.quantity},${date}`;
+            })
+            .join("\n");
+          const blob = new Blob([BOM + header + rows], {
+            type: "text/csv;charset=utf-8;",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `sayim_${new Date().toISOString().slice(0, 10)}.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
+        disabled={filtered.length === 0}
+      >
+        CSV Export
+      </button>
       {filtered.length === 0 ? (
         <p className="empty">{items.length === 0 ? "Hələ heç bir sayım yoxdur." : "Nəticə tapılmadı."}</p>
       ) : (
