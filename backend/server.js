@@ -21,6 +21,15 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS sayim_log (
+      id SERIAL PRIMARY KEY,
+      sayim_id INTEGER NOT NULL,
+      barcode VARCHAR(128) NOT NULL,
+      quantity INTEGER NOT NULL,
+      deleted_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
   console.log("DB ready");
 }
 
@@ -45,7 +54,7 @@ app.post("/api/sayim", async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-// DELETE - remove one
+// DELETE - remove one (log before delete)
 app.delete("/api/sayim/:id", async (req, res) => {
   const { id } = req.params;
   const result = await pool.query(
@@ -55,7 +64,20 @@ app.delete("/api/sayim/:id", async (req, res) => {
   if (result.rowCount === 0) {
     return res.status(404).json({ error: "not found" });
   }
+  const deleted = result.rows[0];
+  await pool.query(
+    "INSERT INTO sayim_log (sayim_id, barcode, quantity) VALUES ($1, $2, $3)",
+    [deleted.id, deleted.barcode, deleted.quantity]
+  );
   res.json({ deleted: true });
+});
+
+// GET - deletion log
+app.get("/api/log", async (req, res) => {
+  const result = await pool.query(
+    "SELECT * FROM sayim_log ORDER BY deleted_at DESC"
+  );
+  res.json(result.rows);
 });
 
 const PORT = process.env.PORT || 3001;
